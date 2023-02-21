@@ -10,15 +10,14 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -26,7 +25,7 @@ import frc.robot.Constants.ModuleConstants;
 import frc.robot.subsystems.Util.AimUtil;
 
 public class DriveSubsystem extends SubsystemBase {
-  // SwerveDrivePoseEstimator
+  
   // Robot swerve modules
   private final SwerveModule m_frontLeft =
       new SwerveModule(
@@ -37,10 +36,18 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kFrontLeftTurningEncoderReversed,
           DriveConstants.kOutputRever1,
           DriveConstants.kDriveReverse1,
-          ModuleConstants.kCancoderOffset1,
-          0.12,
-          0.01
-          );
+          ModuleConstants.kCancoderOffset1);
+
+  private final SwerveModule m_rearLeft =
+      new SwerveModule(
+          DriveConstants.kRearLeftDriveMotorPort,
+          DriveConstants.kRearLeftTurningMotorPort,
+          DriveConstants.kRearLeftTurningMotorEncoderChannel,
+          DriveConstants.kRearLeftDriveEncoderReversed,
+          DriveConstants.kRearLeftTurningEncoderReversed,
+          DriveConstants.kOutputRever3,
+          DriveConstants.kDriveReverse3,
+          ModuleConstants.kCancoderOffset3);
 
   private final SwerveModule m_frontRight =
       new SwerveModule(
@@ -51,24 +58,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kFrontRightTurningEncoderReversed,
           DriveConstants.kOutputRever2,
           DriveConstants.kDriveReverse2,
-          ModuleConstants.kCancoderOffset2,
-          0.12,
-          0.01
-          );
-  private final SwerveModule m_rearLeft =
-      new SwerveModule(
-          DriveConstants.kRearLeftDriveMotorPort,
-          DriveConstants.kRearLeftTurningMotorPort,
-          DriveConstants.kRearLeftTurningMotorEncoderChannel,
-          DriveConstants.kRearLeftDriveEncoderReversed,
-          DriveConstants.kRearLeftTurningEncoderReversed,
-          DriveConstants.kOutputRever3,
-          DriveConstants.kDriveReverse3,
-          ModuleConstants.kCancoderOffset3,
-          0.12,
-          0.01
-          );
-
+          ModuleConstants.kCancoderOffset2);
 
   private final SwerveModule m_rearRight =
       new SwerveModule(
@@ -79,33 +69,20 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kRearRightTurningEncoderReversed,
           DriveConstants.kOutputRever4,
           DriveConstants.kDriveReverse4,
-          ModuleConstants.kCancoderOffset4,
-          0.12,
-          0.01
-          );
-                    
-
-
-  public HolonomicDriveController controller = new HolonomicDriveController(
-    new PIDController(0.14, 0, 0.24), //x
-    new PIDController(0.8, 0, 0.187), //y
-    new ProfiledPIDController(0.13, 0, 0, AutoConstants.kThetaControllerConstraints));
+          ModuleConstants.kCancoderOffset4);
   // The gyro sensor
   private final WPI_Pigeon2 m_gyro = new WPI_Pigeon2(DriveConstants.kPigeon2Port);
-  // Odometry class for tracking robot 
-
-    SwerveDrivePoseEstimator mDrivePoseEstimator =
-      new SwerveDrivePoseEstimator(       
-      DriveConstants.kDriveKinematics,
-      m_gyro.getRotation2d(),
-      new SwerveModulePosition[] {
-        m_frontLeft.getPosition(),
-        m_frontRight.getPosition(),
-        m_rearLeft.getPosition(),
-        m_rearRight.getPosition()},
-       new Pose2d()
-      );
-      
+  // Odometry class for tracking robot pose
+  SwerveDriveOdometry m_odometry =
+      new SwerveDriveOdometry(
+          DriveConstants.kDriveKinematics,
+          m_gyro.getRotation2d(),
+          new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+          });
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
@@ -118,6 +95,7 @@ public class DriveSubsystem extends SubsystemBase {
     config.DisableNoMotionCalibration=false;
     config.DisableTemperatureCompensation=false;
     config.enableOptimizations= false;
+
     m_gyro.configAllSettings(config);
     m_gyro.setYaw(0);
   }
@@ -125,7 +103,7 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
-    mDrivePoseEstimator.update(
+    m_odometry.update(
         m_gyro.getRotation2d(),
         new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
@@ -133,40 +111,40 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
         });
-        
-    // addVisionMeasurement()
-     SmartDashboard.putNumber("x", mDrivePoseEstimator.getEstimatedPosition().getX());
-     SmartDashboard.putNumber("Y", mDrivePoseEstimator.getEstimatedPosition().getY());
-     SmartDashboard.putNumber("Pitch",m_gyro.getPitch());
-     SmartDashboard.putNumber("Yaw", m_gyro.getYaw());
-     SmartDashboard.putNumber("roll", m_gyro.getRoll());
-     SmartDashboard.putNumber("degrees", m_frontLeft.getTurningEncoderAngle());
-     //SmartDashboard.putNumber("error", m_frontLeft.getError());
+
+    // SmartDashboard.putNumber("X", m_odometry.getPoseMeters().getX());
+    // SmartDashboard.putNumber("Y", m_odometry.getPoseMeters().getY());
+    // SmartDashboard.putNumber("Yaw", m_gyro.getYaw());
+    // SmartDashboard.putNumber("error", m_frontLeft.getError());
   }
   public boolean isLevel() {
     return Math.abs(m_gyro.getPitch()) < 2 && Math.abs(m_gyro.getRoll()) < 2;
   }
+
   /**
    * Returns the currently-estimated pose of the robot.
    *
    * @return The pose.
    */
-  
   public Pose2d getPose() {
     //return null;
-    return mDrivePoseEstimator.getEstimatedPosition();
-  }
+    return m_odometry.getPoseMeters();
+  }  
   
   public void zeroyaw() {
     m_gyro.setYaw(0);
   }
+
+
+
+
   /**
    * Resets the odometry to the specified pose.
    *
    * @param pose The pose to which to set the odometry.
    */
   public void resetOdometry(Pose2d pose) {
-    mDrivePoseEstimator.resetPosition(
+    m_odometry.resetPosition(
         m_gyro.getRotation2d(),
         new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
@@ -205,11 +183,10 @@ public class DriveSubsystem extends SubsystemBase {
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_gyro.getRotation2d())
                 : new ChassisSpeeds(xSpeed, ySpeed, rot));
-                  
+  
     setModuleStates(swerveModuleStates);
     // SmartDashboard.putNumber("error", xSpeed - m_frontLeft.getDriveEncoderVelocity());
   }
-  
 
   /**
    * Sets the swerve ModuleStates.
@@ -276,10 +253,15 @@ double x, y;
    *
    * @return The turn rate of the robot, in degrees per second
    */
+  
+   public HolonomicDriveController controller = new HolonomicDriveController(
+    new PIDController(0.14, 0, 0.24), //x
+    new PIDController(0.8, 0, 0.187), //y
+    new ProfiledPIDController(0.13, 0, 0, AutoConstants.kThetaControllerConstraints));
+    
   public double getTurnRate() {
     return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
-  }
-  public void leftTarget() {
+  } public void leftTarget() {
     Pose2d curr = getPose();
     double y = AimUtil.getLeftTargetY(curr);
     Pose2d target = new Pose2d(curr.getX(), y, Rotation2d.fromDegrees(0));

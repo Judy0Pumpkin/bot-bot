@@ -6,7 +6,7 @@ package frc.robot;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import com.ctre.phoenix.Util;
+// import com.ctre.phoenix.Util;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,10 +21,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.math.controller.HolonomicDriveController;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import frc.robot.Constants.AutoConstants;
+// import edu.wpi.first.math.controller.HolonomicDriveController;
+// import edu.wpi.first.math.controller.PIDController;
+// import edu.wpi.first.math.controller.ProfiledPIDController;
+// import frc.robot.Constants.AutoConstants;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -37,7 +37,7 @@ public class RobotContainer {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Intake intake = new Intake();
   // The driver's controller
-  XboxController Joystick = new XboxController(OIConstants.kJoystick);
+  XboxController Joystick = new XboxController(OIConstants.kJoystickPort);
   XboxController driverstation = new XboxController(OIConstants.kDriverstationPort);
   // Joystick m_Joystick = new Joystick(0);
 
@@ -56,7 +56,7 @@ public class RobotContainer {
                   Joystick.getLeftY(),
                   Joystick.getLeftX(),
                   Joystick.getRightX()*2,
-                  false),
+                  true),
             m_robotDrive));
   }
 
@@ -68,8 +68,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
   
-    new JoystickButton(driverstation, 2).whileTrue(Commands.runOnce(() -> m_robotDrive.drive( 0,0,0,false), m_robotDrive));
-    new JoystickButton(driverstation, 3).whileTrue(Commands.runOnce(() -> m_robotDrive.drive( 0.35,0,0,false), m_robotDrive));
+   // new JoystickButton(driverstation, 2).whileTrue(Commands.runOnce(() -> m_robotDrive.drive( 0,0,0,false), m_robotDrive));
+   // new JoystickButton(driverstation, 3).whileTrue(Commands.runOnce(() -> m_robotDrive.drive( 0.35,0,0,false), m_robotDrive));
     new JoystickButton(driverstation, 4).whileTrue(Commands.run(m_robotDrive::level));
     new JoystickButton(driverstation, 5).onTrue(Commands.run(m_robotDrive::zeroyaw));
     new JoystickButton(driverstation, 6).onTrue(Commands.run(m_robotDrive::leftTarget));

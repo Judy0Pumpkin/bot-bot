@@ -19,7 +19,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 public final class Constants {
 
   public static final class OIConstants {    
-    public static final int kJoystick = 0;
+    public static final int kJoystickPort = 0;
     public static final int kDriverstationPort = 1
     ;
   }
@@ -31,17 +31,22 @@ public final class Constants {
 
   public static final class DriveConstants {
     
-    public static final int kPigeon2Port = 1;
+    public static final int kPigeon2Port = 13;
 
     public static final int kFrontLeftDriveMotorPort = 1;
-    public static final int kRearLeftDriveMotorPort = 5;
+    public static final int kRearLeftDriveMotorPort = 7;
     public static final int kFrontRightDriveMotorPort = 3;
-    public static final int kRearRightDriveMotorPort = 7;
+    public static final int kRearRightDriveMotorPort = 5;
 
     public static final int kFrontLeftTurningMotorPort = 2;
-    public static final int kRearLeftTurningMotorPort = 6;
+    public static final int kRearLeftTurningMotorPort = 8;
     public static final int kFrontRightTurningMotorPort = 4;
-    public static final int kRearRightTurningMotorPort = 8;
+    public static final int kRearRightTurningMotorPort = 6;
+
+    public static final int kFrontLeftTurningMotorEncoderChannel = 9;
+    public static final int kRearLeftTurningMotorEncoderChannel = 12;
+    public static final int kFrontRightTurningMotorEncoderChannel = 10;
+    public static final int kRearRightTurningMotorEncoderChannel = 11;
 
     // turning encoder
     public static final boolean kFrontLeftTurningEncoderReversed = false;
@@ -67,10 +72,6 @@ public final class Constants {
     public static final boolean kFrontRightDriveEncoderReversed = true;
     public static final boolean kRearRightDriveEncoderReversed = false;
 
-    public static final int kFrontLeftTurningMotorEncoderChannel = 1;
-    public static final int kRearLeftTurningMotorEncoderChannel = 3;
-    public static final int kFrontRightTurningMotorEncoderChannel = 2;
-    public static final int kRearRightTurningMotorEncoderChannel = 4;
     public static final double kTrackWidth = 0.6;
     // Distance between centers of right and left wheels on robot
     public static final double kWheelBase = 0.6;
@@ -99,7 +100,7 @@ public final class Constants {
     public static final double kMaxModuleAngularSpeedRadiansPerSecond = 2 * Math.PI;
     public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 2 * Math.PI;
 
-    //public static final int kEncoderCPR = 2048;
+    public static final int kEncoderCPR = 2048;
     public static final double mk4igearrate = 21.428;
     public static final double kDriveCoefficient =
         0.1 * Math.PI / 60 / 8.14;

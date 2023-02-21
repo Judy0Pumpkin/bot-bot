@@ -4,24 +4,17 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;
-import com.ctre.phoenix.sensors.SensorTimeBase;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.SparkMaxRelativeEncoder;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMaxLowLevel;
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.SensorInitializationStrategy;
+import com.ctre.phoenix.sensors.SensorTimeBase;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -29,13 +22,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ModuleConstants;
 
 public class SwerveModule {
-  private final CANSparkMax m_driveMotor;
-  private final CANSparkMax m_turningMotor;
-  private final SparkMaxPIDController drivepidController;
-  private SparkMaxPIDController turningpidController;
-
- // private final WPI_TalonFX m_driveMotor;
- //private final WPI_TalonFX m_turningMotor;
+  private final WPI_TalonFX m_driveMotor;
+  private final WPI_TalonFX m_turningMotor;
   private final CANCoder m_turningEncoder;
   // private PIDController mRotorPID; 
   /**
@@ -56,33 +44,24 @@ public class SwerveModule {
       boolean turningEncoderReversed,
       boolean turningMotorReversed,
       boolean driveReversed,
-      double cancoderOffset,
-      double turningNominal,
-      double driveNominal
-      ) {
+      double cancoderOffset) {
 
     // initialize
-    // m_driveMotor = new WPI_TalonFX(driveMotorChannel);
-    // m_turningMotor = new WPI_TalonFX(turningMotorChannel);
+    m_driveMotor = new WPI_TalonFX(driveMotorChannel);
+    m_turningMotor = new WPI_TalonFX(turningMotorChannel);
     
-    m_driveMotor = new CANSparkMax(driveMotorChannel,MotorType.kBrushless);
-    m_turningMotor = new CANSparkMax(turningMotorChannel,MotorType.kBrushless);
     m_turningEncoder = new CANCoder(turningMotorEncoderChannel);
 
     // setting
-    // m_driveMotor.configFactoryDefault();
-    // m_turningMotor.configFactoryDefault();
-    m_driveMotor.restoreFactoryDefaults();
-    m_turningMotor.restoreFactoryDefaults();
+    m_driveMotor.configFactoryDefault();
+    m_turningMotor.configFactoryDefault();
     m_turningEncoder.configFactoryDefault();
 
     // voltage compensation
-    m_driveMotor.enableVoltageCompensation(9);
-    //m_driveMotor.enableVoltageCompensation(true);
-    //m_driveMotor.configVoltageCompSaturation(9);
-    m_turningMotor.enableVoltageCompensation(9);
-    // m_turningMotor.enableVoltageCompensation(true);
-    // m_turningMotor.configVoltageCompSaturation(9);
+    m_driveMotor.enableVoltageCompensation(true);
+    m_driveMotor.configVoltageCompSaturation(9);
+    m_turningMotor.enableVoltageCompensation(true);
+    m_turningMotor.configVoltageCompSaturation(9);
 
     // sensor
     m_turningEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
@@ -92,93 +71,68 @@ public class SwerveModule {
     m_turningEncoder.configMagnetOffset(cancoderOffset);
     m_turningEncoder.setPositionToAbsolute();
 
-
     // set remote sensor
-    // m_turningMotor.configRemoteFeedbackFilter(m_turningEncoder, 0);
-    // m_turningMotor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0, 0, 10);
-    // m_turningMotor.configSelectedFeedbackSensor(FeedbackDevice.None, 1, 10);
-    // m_driveMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-       m_turningMotor.getEncoder().setPosition(m_turningEncoder.getPosition()/360*ModuleConstants.mk4igearrate);
-
-
-       
+    m_turningMotor.configRemoteFeedbackFilter(m_turningEncoder, 0);
+    m_turningMotor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0, 0, 10);
+    m_turningMotor.configSelectedFeedbackSensor(FeedbackDevice.None, 1, 10);
+    
+    m_driveMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    // m_driveMotor.setSelectedSensorPosition(0);
     // reverse
     m_driveMotor.setInverted(driveReversed);
-    //m_driveMotor.setSensorPhase(driveEncoderReversed);
+    m_driveMotor.setSensorPhase(driveEncoderReversed);
+
     m_turningMotor.setInverted(turningMotorReversed);
 
     // deadband
-    // m_driveMotor.configNeutralDeadband(0.05);
-    // m_turningMotor.configNeutralDeadband(0.1);
+    m_driveMotor.configNeutralDeadband(0.05);
+    m_turningMotor.configNeutralDeadband(0.1);
 
     // PIDF
-    drivepidController = m_driveMotor.getPIDController();
-    drivepidController.setFF(0);
-    drivepidController.setP(0);   
-    drivepidController.setI(0);    
-    drivepidController.setD(0);
-    // m_driveMotor.config_kF(0, 0.065);
-    // m_driveMotor.config_kP(0, 0.15);
-    // m_driveMotor.config_kI(0, 0);
-    // m_driveMotor.config_kD(0, 0);
+    m_driveMotor.config_kF(0, 0.065);
+    m_driveMotor.config_kP(0, 0.15);
+    m_driveMotor.config_kI(0, 0);
+    m_driveMotor.config_kD(0, 0);
 
-    turningpidController = m_turningMotor.getPIDController();
-    turningpidController.setFF(0);     
-    turningpidController.setP(0);
-    turningpidController.setI(0);    
-    turningpidController.setD(0);
-    // m_turningMotor.config_kF(0, 0.14);
-    // m_turningMotor.config_kP(0, 1.165);
-    // m_turningMotor.config_kI(0, 0);
-    // m_turningMotor.config_kD(0, 0.08);
-    int smartMotionSlot = 0;
-    //m_turningMotor.configAllowableClosedloopError(0, 0);
-    turningpidController.setSmartMotionAllowedClosedLoopError(0, smartMotionSlot);
-   
-    //m_turningMotor.configNominalOutputForward(0.095);
-    //m_turningMotor.configNominalOutputReverse(-0.095);
-    
- 
-    turningpidController.setSmartMotionMaxVelocity(750, smartMotionSlot);
-    turningpidController.setSmartMotionMinOutputVelocity(0, smartMotionSlot);
-    turningpidController.setSmartMotionMaxAccel(600, smartMotionSlot);
-    // m_turningMotor.configMotionAcceleration(4096);
-    // m_turningMotor.configMotionCruiseVelocity(5108);
+    m_turningMotor.config_kF(0, 0.14);
+    m_turningMotor.config_kP(0, 1.2);
+    m_turningMotor.config_kI(0, 0);
+    m_turningMotor.config_kD(0, 0);
 
-    m_turningMotor.setIdleMode(IdleMode.kBrake);
-    m_driveMotor.setIdleMode(IdleMode.kCoast);
-    //m_turningMotor.setNeutralMode(NeutralMode.Brake);
-    //m_driveMotor.setNeutralMode(NeutralMode.Coast);
+    m_turningMotor.configAllowableClosedloopError(0, 0);
+    m_turningMotor.configNominalOutputForward(0.095);
+    m_turningMotor.configNominalOutputReverse(-0.095);
 
-   // var voltage = new SupplyCurrentLimitConfiguration(true, 30, 50, 0.1);
-   // m_driveMotor.configSupplyCurrentLimit(voltage);
-   //m_turningMotor.configNominalOutputForward(turningNominal);
-   // m_driveMotor.configNominalOutputForward(driveNominal);
-    m_driveMotor.setSmartCurrentLimit(60,30);
+    m_turningMotor.configMotionAcceleration(4096);
+    m_turningMotor.configMotionCruiseVelocity(5108);
+    m_turningMotor.setNeutralMode(NeutralMode.Brake);
+    m_driveMotor.setNeutralMode(NeutralMode.Coast);
+
+    var voltage = new SupplyCurrentLimitConfiguration(true, 30, 50, 0.1);
+    m_driveMotor.configSupplyCurrentLimit(voltage);
   }
-  // CANcoder to talon(4096) or sparkMAX
+  // CANcoder to talon
   private double deg2raw(double deg) {
-    return ((deg)) / (360.0)*ModuleConstants.mk4igearrate;//4096
+    return ((deg)) / (360.0 / 4096.0);
   }
 
   // m
   public double getDriveEncoderPosition() {
-    return m_driveMotor.getEncoder().getPosition() * ModuleConstants.kDriveCoefficient;
+    return m_driveMotor.getSelectedSensorPosition() * ModuleConstants.kDriveCoefficient;
   }
 
   // m/s
   public double getDriveEncoderVelocity() {
-    return m_driveMotor.getEncoder().getVelocity() * ModuleConstants.kDriveCoefficient / 60;//*10
+    return m_driveMotor.getSelectedSensorVelocity() * ModuleConstants.kDriveCoefficient * 10;
   }
 
   // deg
   public double getTurningEncoderAngle() {
     // Set the distance (in this case, angle) in radians per pulse for the turning encoder.
     // This is the the angle through an entire rotation (2 * pi) divided by the
-    // encoder resolution.  getPosition(m_turningEncoder.getPosition()/360)
-    
-    return  m_turningMotor.getEncoder().getPosition()* 360.0 / ModuleConstants.mk4igearrate ;//   / 4096.0   
-  }                  //m_turningMotor.getSelectedSensorPosition()
+    // encoder resolution.
+    return m_turningMotor.getSelectedSensorPosition() / 4096.0 * 360.0;
+  }
 
   public double getTurningEncoderRadian() {
     return getTurningEncoderAngle() / 180.0 * Math.PI;
@@ -206,8 +160,7 @@ public class SwerveModule {
     return new SwerveModulePosition(getDriveEncoderPosition(), Rotation2d.fromDegrees(getTurningEncoderAngle()));
   }
   public double getError() {
-    //return m_driveMotor.getClosedLoopError();
-    return drivepidController.getSmartMotionAllowedClosedLoopError(0);
+    return m_driveMotor.getClosedLoopError();
   }
   /**
    * Sets the desired state for the module.
@@ -224,20 +177,18 @@ public class SwerveModule {
     if(x >= 10) {
       x=0;
       SmartDashboard.putNumber("Velocity", state.speedMetersPerSecond / ModuleConstants.kDriveCoefficient);
-      SmartDashboard.putNumber("Velocity(sensor)", m_driveMotor.getEncoder().getVelocity());
+      SmartDashboard.putNumber("Velocity(sensor)", m_driveMotor.getSelectedSensorVelocity());
     }
     // m -> raw    
     // 補償CTRE是以每0.1s
-   // m_driveMotor.set(ControlMode.Velocity, state.speedMetersPerSecond / ModuleConstants.kDriveCoefficient / 10.0);
+    m_driveMotor.set(ControlMode.Velocity, state.speedMetersPerSecond / ModuleConstants.kDriveCoefficient / 10.0);
     // deg -> raw
-   // m_turningMotor.set(ControlMode.MotionMagic, deg2raw(state.angle.getDegrees()));
-    drivepidController.setReference(state.speedMetersPerSecond / ModuleConstants.kDriveCoefficient, ControlType.kVelocity);//*60
-    turningpidController.setReference( deg2raw(state.angle.getDegrees()),ControlType.kSmartMotion);
+    m_turningMotor.set(ControlMode.MotionMagic, deg2raw(state.angle.getDegrees()));
   }
 
   /** Zeroes all the SwerveModule encoders. */
   public void resetEncoders() {
-    m_driveMotor.getEncoder().setPosition(0);
-    m_turningMotor.getEncoder().setPosition(0);
+    m_driveMotor.setSelectedSensorPosition(0);
+    m_turningMotor.setSelectedSensorPosition(0);
   }
 }
