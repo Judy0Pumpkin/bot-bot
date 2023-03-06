@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ModuleConstants;
 
 public class SwerveModule {
+
   private final WPI_TalonFX m_driveMotor;
   private final WPI_TalonFX m_turningMotor;
   private final CANCoder m_turningEncoder;
@@ -47,10 +48,10 @@ public class SwerveModule {
       double cancoderOffset) {
 
     // initialize
-    m_driveMotor = new WPI_TalonFX(driveMotorChannel);
-    m_turningMotor = new WPI_TalonFX(turningMotorChannel);
+    m_driveMotor = new WPI_TalonFX(driveMotorChannel, "CANivore");
+    m_turningMotor = new WPI_TalonFX(turningMotorChannel,"CANivore");
     
-    m_turningEncoder = new CANCoder(turningMotorEncoderChannel);
+    m_turningEncoder = new CANCoder(turningMotorEncoderChannel,"CANivore");
 
     // setting
     m_driveMotor.configFactoryDefault();
@@ -90,30 +91,31 @@ public class SwerveModule {
 
     // PIDF
     m_driveMotor.config_kF(0, 0.065);
-    m_driveMotor.config_kP(0, 0.15);
+    m_driveMotor.config_kP(0, 0.1);
     m_driveMotor.config_kI(0, 0);
     m_driveMotor.config_kD(0, 0);
 
     m_turningMotor.config_kF(0, 0.14);
-    m_turningMotor.config_kP(0, 1.2);
+    m_turningMotor.config_kP(0, 1.4);
     m_turningMotor.config_kI(0, 0);
     m_turningMotor.config_kD(0, 0);
 
-    m_turningMotor.configAllowableClosedloopError(0, 0);
-    m_turningMotor.configNominalOutputForward(0.095);
-    m_turningMotor.configNominalOutputReverse(-0.095);
+    m_turningMotor.configAllowableClosedloopError(0, 100);
+    // m_turningMotor.configNominalOutputForward(0.095);
+    // m_turningMotor.configNominalOutputReverse(-0.095);
 
-    m_turningMotor.configMotionAcceleration(4096);
+    m_turningMotor.configMotionAcceleration(4096*10);
     m_turningMotor.configMotionCruiseVelocity(5108);
     m_turningMotor.setNeutralMode(NeutralMode.Brake);
     m_driveMotor.setNeutralMode(NeutralMode.Coast);
 
+    
     var voltage = new SupplyCurrentLimitConfiguration(true, 30, 50, 0.1);
     m_driveMotor.configSupplyCurrentLimit(voltage);
   }
   // CANcoder to talon
   private double deg2raw(double deg) {
-    return ((deg)) / (360.0 / 4096.0);
+    return deg / 360 * 4096;
   }
 
   // m
@@ -176,6 +178,7 @@ public class SwerveModule {
     x++;
     if(x >= 10) {
       x=0;
+      
       SmartDashboard.putNumber("Velocity", state.speedMetersPerSecond / ModuleConstants.kDriveCoefficient);
       SmartDashboard.putNumber("Velocity(sensor)", m_driveMotor.getSelectedSensorVelocity());
     }
@@ -185,6 +188,7 @@ public class SwerveModule {
     // deg -> raw
     m_turningMotor.set(ControlMode.MotionMagic, deg2raw(state.angle.getDegrees()));
   }
+
 
   /** Zeroes all the SwerveModule encoders. */
   public void resetEncoders() {

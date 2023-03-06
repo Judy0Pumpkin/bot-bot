@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
@@ -18,11 +20,16 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.subsystems.Util.AimUtil;
+
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class DriveSubsystem extends SubsystemBase {
   
@@ -34,10 +41,32 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kFrontLeftTurningMotorEncoderChannel,
           DriveConstants.kFrontLeftDriveEncoderReversed,
           DriveConstants.kFrontLeftTurningEncoderReversed,
-          DriveConstants.kOutputRever1,
-          DriveConstants.kDriveReverse1,
-          ModuleConstants.kCancoderOffset1);
+          DriveConstants.kfrontleftturn,
+          DriveConstants.kfrontleftdrive,
+          ModuleConstants.kfrontleftcancoderOffset);
 
+  private final SwerveModule m_frontRight =
+      new SwerveModule(
+          DriveConstants.kFrontRightDriveMotorPort,
+          DriveConstants.kFrontRightTurningMotorPort,
+          DriveConstants.kFrontRightTurningMotorEncoderChannel,
+          DriveConstants.kFrontRightDriveEncoderReversed,
+          DriveConstants.kFrontRightTurningEncoderReversed,
+          DriveConstants.kfontrightturn,
+          DriveConstants.kfrontrightdrive,
+          ModuleConstants.kfrontrightcancoderOffset);        
+
+   private final SwerveModule m_rearRight =
+      new SwerveModule(
+          DriveConstants.kRearRightDriveMotorPort,
+          DriveConstants.kRearRightTurningMotorPort,
+          DriveConstants.kRearRightTurningMotorEncoderChannel,
+          DriveConstants.kRearRightDriveEncoderReversed,
+          DriveConstants.kRearRightTurningEncoderReversed,
+          DriveConstants.kOutputRever4,
+          DriveConstants.kDriveReverse4,
+          ModuleConstants.krearrightcancoderOffset);
+                  
   private final SwerveModule m_rearLeft =
       new SwerveModule(
           DriveConstants.kRearLeftDriveMotorPort,
@@ -47,31 +76,11 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kRearLeftTurningEncoderReversed,
           DriveConstants.kOutputRever3,
           DriveConstants.kDriveReverse3,
-          ModuleConstants.kCancoderOffset3);
+          ModuleConstants.krearleftcancoderoffset);
 
-  private final SwerveModule m_frontRight =
-      new SwerveModule(
-          DriveConstants.kFrontRightDriveMotorPort,
-          DriveConstants.kFrontRightTurningMotorPort,
-          DriveConstants.kFrontRightTurningMotorEncoderChannel,
-          DriveConstants.kFrontRightDriveEncoderReversed,
-          DriveConstants.kFrontRightTurningEncoderReversed,
-          DriveConstants.kOutputRever2,
-          DriveConstants.kDriveReverse2,
-          ModuleConstants.kCancoderOffset2);
 
-  private final SwerveModule m_rearRight =
-      new SwerveModule(
-          DriveConstants.kRearRightDriveMotorPort,
-          DriveConstants.kRearRightTurningMotorPort,
-          DriveConstants.kRearRightTurningMotorEncoderChannel,
-          DriveConstants.kRearRightDriveEncoderReversed,
-          DriveConstants.kRearRightTurningEncoderReversed,
-          DriveConstants.kOutputRever4,
-          DriveConstants.kDriveReverse4,
-          ModuleConstants.kCancoderOffset4);
   // The gyro sensor
-  private final WPI_Pigeon2 m_gyro = new WPI_Pigeon2(DriveConstants.kPigeon2Port);
+  private final WPI_Pigeon2 m_gyro = new WPI_Pigeon2(DriveConstants.kPigeon2Port,"CANivore");
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry =
       new SwerveDriveOdometry(
@@ -116,6 +125,11 @@ public class DriveSubsystem extends SubsystemBase {
     // SmartDashboard.putNumber("Y", m_odometry.getPoseMeters().getY());
     // SmartDashboard.putNumber("Yaw", m_gyro.getYaw());
     // SmartDashboard.putNumber("error", m_frontLeft.getError());
+    SmartDashboard.putNumber("frontleft", m_frontLeft.getTurningEncoderAngle());
+    SmartDashboard.putNumber("frontright", m_frontRight.getTurningEncoderAngle());
+    SmartDashboard.putNumber("rearright", m_rearRight.getTurningEncoderAngle());
+    SmartDashboard.putNumber("rearleft", m_rearLeft.getTurningEncoderAngle());
+
   }
   public boolean isLevel() {
     return Math.abs(m_gyro.getPitch()) < 2 && Math.abs(m_gyro.getRoll()) < 2;
@@ -154,8 +168,8 @@ public class DriveSubsystem extends SubsystemBase {
         },
         pose);
   }
-  SlewRateLimiter limiter1 = new SlewRateLimiter(1.5, -1.5, 0);
-  SlewRateLimiter limiter2 = new SlewRateLimiter(1.5, -1.5, 0);
+  // SlewRateLimiter limiter1 = new SlewRateLimiter(1.5, -1.5, 0);
+  // SlewRateLimiter limiter2 = new SlewRateLimiter(1.5, -1.5, 0);
 
   public Runnable drive;
 
@@ -174,8 +188,8 @@ public class DriveSubsystem extends SubsystemBase {
       ySpeed = 0;
       rot = 0;
     }
-    xSpeed = limiter1.calculate(xSpeed);
-    ySpeed = limiter2.calculate(ySpeed);
+    // xSpeed = limiter1.calculate(xSpeed);
+    // ySpeed = limiter2.calculate(ySpeed);
     
 
     var swerveModuleStates =
@@ -209,31 +223,58 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.resetEncoders();
     m_rearRight.resetEncoders();
   }
+
+// Assuming this method is part of a drivetrain subsystem that provides the necessary methods
+public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
+  return new SequentialCommandGroup(
+       new InstantCommand(() -> {
+         // Reset odometry for the first path you run during auto
+         if(isFirstPath){
+             this.resetOdometry(traj.getInitialHolonomicPose());
+         }
+       }),
+       new PPSwerveControllerCommand(
+           traj, 
+           this::getPose, // Pose supplier
+           DriveConstants.kDriveKinematics, // SwerveDriveKinematics
+           new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+           new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
+           new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+           this::setModuleStates, // Module states consumer
+           false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+           this // Requires this drive subsystem
+       )
+   );
+}
+
+
+
 double x, y;
   public void level(){
 
     if (m_gyro.getRoll() > 2){
-      y=-0.2;
+      y=-1;
     } 
     else if (m_gyro.getRoll() <-2){
-      y=0.2;
+      y=1;
     }
     else y=0;
   
     if (m_gyro.getPitch() > 2){
-      x=-0.2;
+      x=-1;
     }
     else if (m_gyro.getPitch() <-2){
-      x=0.2;
+      x=1;
     }
     else x=0;
 
-      drive(y, x, 0, false);
+      drive(y, x, 0, true);
     }
 
   public boolean isleveled(){
     return Math.abs(m_gyro.getRoll())<2 && Math.abs(m_gyro.getPitch())<2;
   }
+
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
     m_gyro.reset();

@@ -29,6 +29,12 @@ public final class Constants {
     public static final int intakerightport = 10;
   }
 
+  public static final class ArmConstants{
+    public static final int intakeleftport = 9;
+    public static final int intakerightport = 10;
+  }
+
+
   public static final class DriveConstants {
     
     public static final int kPigeon2Port = 13;
@@ -49,27 +55,27 @@ public final class Constants {
     public static final int kRearRightTurningMotorEncoderChannel = 11;
 
     // turning encoder
-    public static final boolean kFrontLeftTurningEncoderReversed = false;
-    public static final boolean kRearLeftTurningEncoderReversed = false;
-    public static final boolean kFrontRightTurningEncoderReversed = false;
-    public static final boolean kRearRightTurningEncoderReversed = false;
+    public static final boolean kFrontLeftTurningEncoderReversed = true;
+    public static final boolean kRearLeftTurningEncoderReversed = true;
+    public static final boolean kFrontRightTurningEncoderReversed = true;
+    public static final boolean kRearRightTurningEncoderReversed = true;
 
     // turning motor
-    public static final boolean kOutputRever1 = false;
-    public static final boolean kOutputRever2 = false;
-    public static final boolean kOutputRever3 = false;
-    public static final boolean kOutputRever4 = false;
+    public static final boolean kfrontleftturn = true;
+    public static final boolean kfontrightturn = true;
+    public static final boolean kOutputRever3 = true;
+    public static final boolean kOutputRever4 = true;
 
     // drive motor
-    public static final boolean kDriveReverse1 = true;
-    public static final boolean kDriveReverse2 = true;
-    public static final boolean kDriveReverse3 = false;
-    public static final boolean kDriveReverse4 = false;
+    public static final boolean kfrontleftdrive = true;
+    public static final boolean kfrontrightdrive = false;
+    public static final boolean kDriveReverse3 = true;
+    public static final boolean kDriveReverse4 = true;
     
     // drive encoder
-    public static final boolean kFrontLeftDriveEncoderReversed = true;
+    public static final boolean kFrontLeftDriveEncoderReversed = false;
     public static final boolean kRearLeftDriveEncoderReversed = false;
-    public static final boolean kFrontRightDriveEncoderReversed = true;
+    public static final boolean kFrontRightDriveEncoderReversed = false;
     public static final boolean kRearRightDriveEncoderReversed = false;
 
     public static final double kTrackWidth = 0.6;
@@ -87,7 +93,7 @@ public final class Constants {
 
     // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
     // These characterization values MUST be determined either experimentally or theoretically
-    // for *your* robot's drive.
+    // for your robot's drive.
     // The SysId tool provides a convenient method for obtaining these values for your robot.
     public static final double ksVolts = 1;
     public static final double kvVoltSecondsPerMeter = 0.8;
@@ -101,19 +107,19 @@ public final class Constants {
     public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 2 * Math.PI;
 
     public static final int kEncoderCPR = 2048;
-    public static final double mk4igearrate = 21.428;
+    // public static final double mk4igearrate = 21.428;
     public static final double kDriveCoefficient =
-        0.1 * Math.PI / 60 / 8.14;
+        0.1 * Math.PI / kEncoderCPR / 8.14;
 
     public static final double kPModuleTurningController = 1;
 
     public static final double kPModuleDriveController = 1;
 
 
-    public static final double kCancoderOffset1 = -212.43164062;
-    public static final double kCancoderOffset2 = -164.1796825;
-    public static final double kCancoderOffset3 = -319.921875;
-    public static final double kCancoderOffset4 = -68.46679688;   
+    public static final double kfrontleftcancoderOffset = 25.928-44.736-10.279; //64.16+6-10.7+87.979+6.85546875-8.3;//69.434
+    public static final double kfrontrightcancoderOffset =44.561-85.34+4.402;// 127.090-3+13.9 -5+5.185546875+9.1;//121.904 
+    public static final double krearrightcancoderOffset = -101.250+11.769;//89.209+6+8+0.52734375-13.1;  //82.793
+    public static final double krearleftcancoderoffset =19.688-34.014-4.131;//87.539+62 +13.095703125;//38.408
   }
 
   public static final class AutoConstants {
