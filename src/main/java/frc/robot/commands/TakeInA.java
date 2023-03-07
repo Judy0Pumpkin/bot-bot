@@ -24,7 +24,7 @@ public class TakeInA extends SequentialCommandGroup {
     addCommands(new InstantCommand(()->m_arm.tubeIn(), m_arm));
     addCommands(new InstantCommand(()->m_arm.clawForward(), m_arm));
     // addCommands(new InstantCommand(()->m_intake.intakeshoot(), m_intake));
-    addCommands(new RunCommand(()->m_intake.intakeStart(), m_intake));
+    addCommands(new InstantCommand(()->m_intake.intakeStart(), m_intake));
     
 
     addRequirements(m_arm, m_Elevator, m_intake);

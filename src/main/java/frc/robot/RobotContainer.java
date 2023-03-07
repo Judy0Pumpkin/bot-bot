@@ -22,9 +22,11 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.AutoBack;
 import frc.robot.commands.AutoLeft;
 import frc.robot.commands.AutoMiddle;
 import frc.robot.commands.AutoRight;
+import frc.robot.commands.AutoTakeIn;
 import frc.robot.commands.Back;
 import frc.robot.commands.Output;
 import frc.robot.commands.Stop;
@@ -76,11 +78,13 @@ public class RobotContainer {
   // private final PathPlannerTrajectory mred1to3 = PathPlanner.loadPath("blue1-3", new PathConstraints(0.5, 1));
   
   
-  TakeIn mTakeIn =new TakeIn(m_intake, m_arm, m_Elevator);
-  TakeInA mTakeIn2 = new TakeInA(m_intake, m_arm, m_Elevator);
-  Output m_OutPut = new Output(m_intake, m_arm, m_Elevator);
-  Back m_Back = new Back(m_intake, m_arm, m_Elevator);
-  AutoLeft m_AutoLeft = new AutoLeft(m_intake, m_arm, m_Elevator, mTakeIn, mTakeIn2, m_Back, m_robotDrive, mblue1to1, mblue1to2, mblue1to3, m_OutPut);
+  private final TakeIn mTakeIn =new TakeIn(m_intake, m_arm, m_Elevator);
+  private final TakeInA mTakeIn2 = new TakeInA(m_intake, m_arm, m_Elevator);
+  private final Output m_OutPut = new Output(m_intake, m_arm, m_Elevator);
+  private final Back m_Back = new Back(m_intake, m_arm, m_Elevator);
+  private final AutoBack m_AutoBack = new AutoBack(m_intake, m_arm, m_Elevator);  
+  private final AutoTakeIn m_AutoTakeIn = new AutoTakeIn(m_intake, m_arm, m_Elevator);
+  private final  AutoLeft m_AutoLeft = new AutoLeft(m_intake, m_arm, m_Elevator, m_AutoTakeIn, mTakeIn2, m_AutoBack, m_robotDrive, mblue1to1, mblue1to2, mblue1to3, m_OutPut);
   // AutoRight m_AutoRight = new AutoRight(m_intake, m_arm, m_Elevator, mTakeIn, mTakeIn2, m_Back, m_robotDrive, mblue3to1, mblue3to2, mblue3to3, m_OutPut);
   // AutoMiddle m_AutoMiddle = new AutoMiddle(m_intake, m_arm, m_Elevator, mTakeIn, mTakeIn2, m_Back, m_robotDrive, mblue2to1, mblue2to2, m_OutPut);
   // The driver's controller
@@ -127,7 +131,8 @@ public class RobotContainer {
     new JoystickButton(driverstation,1).onTrue(Commands.runOnce(m_Elevator::level2).andThen(Commands.runOnce(m_arm::armOut)));  
     new JoystickButton(driverstation,7).onTrue(Commands.runOnce(m_Elevator::level1).andThen(Commands.runOnce(m_arm::armOut)));  
     // new JoystickButton(Joystick, 4).onTrue(Commands.runOnce(m_robotDrive::zeroyaw, m_robotDrive));
-    new JoystickButton(driverstation,3).onTrue(m_Back); 
+    new JoystickButton(driverstation,3).whileTrue(m_Back);
+    ///.onTrue(m_Back); 
     
 
      

@@ -63,13 +63,13 @@ public final class Constants {
     // turning motor
     public static final boolean kfrontleftturn = true;
     public static final boolean kfontrightturn = true;
-    public static final boolean kOutputRever3 = true;
-    public static final boolean kOutputRever4 = true;
+    public static final boolean kOutputRever3 = false;
+    public static final boolean kOutputRever4 = false;
 
     // drive motor
     public static final boolean kfrontleftdrive = true;
     public static final boolean kfrontrightdrive = false;
-    public static final boolean kDriveReverse3 = true;
+    public static final boolean kDriveReverse3 = false;
     public static final boolean kDriveReverse4 = true;
     
     // drive encoder
@@ -116,10 +116,10 @@ public final class Constants {
     public static final double kPModuleDriveController = 1;
 
 
-    public static final double kfrontleftcancoderOffset = 25.928-44.736-10.279; //64.16+6-10.7+87.979+6.85546875-8.3;//69.434
-    public static final double kfrontrightcancoderOffset =44.561-85.34+4.402;// 127.090-3+13.9 -5+5.185546875+9.1;//121.904 
-    public static final double krearrightcancoderOffset = -101.250+11.769;//89.209+6+8+0.52734375-13.1;  //82.793
-    public static final double krearleftcancoderoffset =19.688-34.014-4.131;//87.539+62 +13.095703125;//38.408
+    public static final double kfrontleftcancoderOffset = -72.592-11.5-6.7+7.03125+8.6; 
+    public static final double kfrontrightcancoderOffset = -39.982-10.018+6.15234375; 
+    public static final double krearrightcancoderOffset = -105.117-13.272+16.874-2.64-7.64;
+    public static final double krearleftcancoderoffset = 64.51;
   }
 
   public static final class AutoConstants {

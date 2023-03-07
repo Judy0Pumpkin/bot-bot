@@ -91,16 +91,16 @@ public class SwerveModule {
 
     // PIDF
     m_driveMotor.config_kF(0, 0.065);
-    m_driveMotor.config_kP(0, 0.1);
+    m_driveMotor.config_kP(0, 0.01);
     m_driveMotor.config_kI(0, 0);
     m_driveMotor.config_kD(0, 0);
 
-    m_turningMotor.config_kF(0, 0.14);
-    m_turningMotor.config_kP(0, 1.4);
-    m_turningMotor.config_kI(0, 0);
+    m_turningMotor.config_kF(0, 0.5);
+    m_turningMotor.config_kP(0, 0.03);
+    m_turningMotor.config_kI(0, 0.0);
     m_turningMotor.config_kD(0, 0);
 
-    m_turningMotor.configAllowableClosedloopError(0, 100);
+    m_turningMotor.configAllowableClosedloopError(0, 0);
     // m_turningMotor.configNominalOutputForward(0.095);
     // m_turningMotor.configNominalOutputReverse(-0.095);
 

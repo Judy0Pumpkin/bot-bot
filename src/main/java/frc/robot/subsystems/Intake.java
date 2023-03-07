@@ -16,9 +16,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
 public class Intake extends SubsystemBase {
-Timer m_Timer = new Timer(); 
- CANSparkMax intakeleft = new CANSparkMax( IntakeConstants.intakeleftport, MotorType.kBrushless);
- CANSparkMax intakeright = new CANSparkMax( IntakeConstants.intakerightport, MotorType.kBrushless);
+  Timer m_Timer = new Timer(); 
+  CANSparkMax intakeleft = new CANSparkMax( IntakeConstants.intakeleftport, MotorType.kBrushless);
+  CANSparkMax intakeright = new CANSparkMax( IntakeConstants.intakerightport, MotorType.kBrushless);
 
 
   /** Creates a new Intake. */
@@ -38,16 +38,15 @@ Timer m_Timer = new Timer();
     intakeright.set(-0.1);
     }
 
-    public void neoStop(){
-intakeleft.set(0);
-intakeright.set(0);
-
+ public void neoStop(){
+    intakeleft.set(0);
+    intakeright.set(0);
 
     }
  public void mini(){
-  
   intakeleft.set(0.05);
   intakeright.set(-0.05);
+  
  }
 
   // public void intakeStart(){
@@ -67,6 +66,8 @@ intakeright.set(0);
     intakeleft.set(0);
     intakeright.set(0);
   }
+
+
 
 
 

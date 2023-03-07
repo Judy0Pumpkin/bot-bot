@@ -16,9 +16,9 @@ import frc.robot.subsystems.Intake;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class TakeIn extends SequentialCommandGroup {
+public class AutoTakeIn extends SequentialCommandGroup {
   /** Creates a new TakeIn. */
-  public TakeIn(Intake m_intake, Arm m_arm, Elevator m_Elevator) {
+  public AutoTakeIn(Intake m_intake, Arm m_arm, Elevator m_Elevator) {
   
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());

@@ -21,20 +21,20 @@ private WPI_TalonFX mElevator = new WPI_TalonFX(25);
     mElevator.configFactoryDefault();
     
   // m_slaveTalon.configFactoryDefault();
-  mElevator.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 1);
-  mElevator.setInverted(true);
-  mElevator.setSensorPhase(false);
-  mElevator.setNeutralMode(NeutralMode.Brake);
-  mElevator.config_kF(0, 0.1, 10);
-  mElevator.config_kP(0, 0.05, 10);
+    mElevator.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 1);
+    mElevator.setInverted(true);
+    mElevator.setSensorPhase(false);
+    mElevator.setNeutralMode(NeutralMode.Brake);
+    mElevator.config_kF(0, 0.1, 10);
+    mElevator.config_kP(0, 0.05, 10);
 
     
-  mElevator.enableVoltageCompensation(false);
+    mElevator.enableVoltageCompensation(false);
   //mElevator.configVoltageCompSaturation(9, 1);
-  mElevator.configMotionCruiseVelocity(9192*2);   // start testing with half the value of maximum sensor velocity
-  mElevator.configMotionAcceleration(4096*2);
-  mElevator.configMotionSCurveStrength(0);  
-  mElevator.setSelectedSensorPosition(-800);
+    mElevator.configMotionCruiseVelocity(9192*3);   // start testing with half the value of maximum sensor velocity
+    mElevator.configMotionAcceleration(4096*3);
+    mElevator.configMotionSCurveStrength(0);  
+    mElevator.setSelectedSensorPosition(-800);
   }
 
 
@@ -46,7 +46,7 @@ private WPI_TalonFX mElevator = new WPI_TalonFX(25);
   
   public void level3(){
 
-    mElevator.set(ControlMode.MotionMagic, 178000); //178547
+    mElevator.set(ControlMode.MotionMagic, 170000); //178547
   }
 
   public void level2(){
@@ -62,7 +62,7 @@ private WPI_TalonFX mElevator = new WPI_TalonFX(25);
   }
 
   public void elevatorstop(){
-mElevator.set(ControlMode.PercentOutput,0);
+    mElevator.set(ControlMode.PercentOutput,0);
 
   }
 

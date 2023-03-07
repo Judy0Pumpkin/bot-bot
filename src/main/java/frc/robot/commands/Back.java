@@ -21,7 +21,7 @@ public class Back extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(new InstantCommand(()->m_arm.armIn(), m_arm));
     addCommands(new InstantCommand(()->m_arm.tubeForward(), m_arm));
-    addCommands(new RunCommand(()->m_Elevator.back(), m_Elevator));
+    addCommands(new InstantCommand(()->m_Elevator.back(), m_Elevator).withTimeout(2));
 
     addRequirements(m_arm, m_Elevator, m_intake);
   }
